@@ -14,12 +14,14 @@ exports.createAnnouncement = asyncHandler(async (req, res, next) => {
   });
 
   const io = req.app.get('io');
-  io.to(`event:${event._id}`).emit('announcement', {
-    event: event._id,
-    sender: req.user.id,
-    content: message.content,
-    timestamp: message.createdAt,
-  });
+  if (io) {
+    io.to(`event:${event._id}`).emit('announcement', {
+      event: event._id,
+      sender: req.user.id,
+      content: message.content,
+      timestamp: message.createdAt,
+    });
+  }
 
   res.status(201).json({ status: 'success', data: message });
 });
