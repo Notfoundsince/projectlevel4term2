@@ -1,4 +1,5 @@
 const Event = require('../models/Event');
+require('../models/Category'); // registers the Category schema so populate('category') works
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../utils/asyncHandler');
 
