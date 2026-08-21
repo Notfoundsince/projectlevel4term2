@@ -1,10 +1,7 @@
 require('dotenv').config();
 const http = require('http');
 const app = require('./app');
-const connectDB = require('./config/db');
 const initSocket = require('./socket');
-
-connectDB();
 
 // Only start a listening server + Socket.io when run directly (local dev,
 // or a persistent host). On Vercel, this file is required as a module and

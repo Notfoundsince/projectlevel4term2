@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const registrationRoutes = require('./routes/registrationRoutes');
@@ -8,6 +9,16 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 
 app.use(express.json());
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+  } catch (err) {
+    // swallowed here - /health still reports status either way,
+    // and routes that need the DB will fail on their own query.
+  }
+  next();
+});
 
 app.get('/health', (req, res) => {
   const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';

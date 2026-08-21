@@ -1,17 +1,21 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
 
-let isConnected = false;
+dns.setServers(['8.8.8.8', '1.1.1.1']); // fixes querySrv ECONNREFUSED on Node 22+/Windows
 
-const connectDB = async () => {
-  if (isConnected) return;
+let connectionPromise = null;
 
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    isConnected = true;
-    console.log('MongoDB connected');
-  } catch (err) {
-    console.error('MongoDB connection error:', err.message);
+const connectDB = () => {
+  if (mongoose.connection.readyState === 1) return Promise.resolve();
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose.connect(process.env.MONGO_URI).catch((err) => {
+      connectionPromise = null; // allow retry on the next request
+      throw err;
+    });
   }
+
+  return connectionPromise;
 };
 
 module.exports = connectDB;
