@@ -15,6 +15,11 @@ const eventSchema = new mongoose.Schema(
       ref: 'Category',
       required: [true, 'Category is required'],
     },
+    organizer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'Organizer is required'],
+    },
     date: {
       type: Date,
       required: [true, 'Date is required'],
@@ -26,10 +31,6 @@ const eventSchema = new mongoose.Schema(
     capacity: {
       type: Number,
       required: [true, 'Capacity is required'],
-    },
-    registrationsCount: {
-      type: Number,
-      default: 0,
     },
   },
   { timestamps: true }

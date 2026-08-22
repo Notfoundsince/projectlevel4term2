@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const registrationSchema = new mongoose.Schema(
   {
-    user: {
+    attendee: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
@@ -17,6 +17,6 @@ const registrationSchema = new mongoose.Schema(
 );
 
 // Prevents the same user from registering for the same event twice
-registrationSchema.index({ user: 1, event: 1 }, { unique: true });
+registrationSchema.index({ event: 1, attendee: 1 }, { unique: true });
 
 module.exports = mongoose.model('Registration', registrationSchema);

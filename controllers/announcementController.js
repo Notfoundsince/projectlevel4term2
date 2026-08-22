@@ -11,7 +11,7 @@ exports.createAnnouncement = asyncHandler(async (req, res, next) => {
 
   const message = await Message.create({
     event: eventId,
-    sender: req.user.id,
+    sender: req.user.userId,
     text,
   });
 
