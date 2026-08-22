@@ -1,17 +1,19 @@
 # EventPulse
 
-Event management API — auth, events, registrations, and real-time announcements over Socket.io.
+Event management API — auth, events, registrations, categories, and real-time announcements
+over Socket.io.
 
 ## Structure
 
 ```
-config/         db connection
+config/         db connection, Swagger config
 models/         User, Event, Category, Registration, Message
 controllers/    business logic
 routes/         route definitions
-middleware/     auth, roles, validation, error handling
+middleware/     auth, roles, validation, error handling, 404
 utils/          AppError, asyncHandler
 tests/          unit + integration
+postman/        Postman collection + environment
 ```
 
 ## Setup
@@ -20,7 +22,7 @@ tests/          unit + integration
 2. Copy `.env.example` → `.env`, fill in `MONGO_URI` and `JWT_SECRET`
 3. `npm run seed` — creates categories, sample events, and an admin user
    (`admin@eventpulse.com` / `admin123`)
-4. `npm run dev`
+4. `npm run dev` — runs on `http://localhost:3000`
 
 ## Tests
 
@@ -30,6 +32,17 @@ npm test
 Unit tests need nothing extra. Integration tests spin up an in-memory MongoDB, so they need
 internet access the first time they run.
 
+## API Docs
+
+Interactive Swagger UI at `GET /api-docs` once the server's running.
+
+## Postman
+
+Import `postman/EventPulse.postman_collection.json` and
+`postman/EventPulse.postman_environment.json`. The environment sets `baseUrl` and an empty
+`token` — logging in via the Auth folder fills `token` in automatically for the rest of the
+collection.
+
 ## API
 
 **Auth**
@@ -38,8 +51,8 @@ internet access the first time they run.
 
 **Events**
 - `GET /api/events` — filter by `category`, `city`, `startDate`/`endDate`, `search`; sort with
-  `sortBy=date|registrations`; paginate with `page`/`limit`
-- `GET /api/events/:id`
+  `sortBy=date|registrations` and `order=asc|desc`; paginate with `page`/`limit`
+- `GET /api/events/:id` — populated with `category` and `organizer`
 - `POST` / `PATCH` / `DELETE /api/events/:id` — admin only
 
 **Registrations**
@@ -47,17 +60,22 @@ internet access the first time they run.
 - `GET /api/registrations/my`
 - `DELETE /api/registrations/:id`
 
+**Categories**
+- `GET /api/categories`
+- `POST /api/categories` — admin only, `{ name }`
+
 **Announcements**
-- `POST /api/events/:id/announcements` — admin only, `{ content }`
-- `GET /api/events/:id/announcements`
+- `POST /api/announcements` — admin only, `{ eventId, text }`
+- `GET /api/announcements/:eventId` — public
 
 **Health**
 - `GET /health`
 
 ## Socket.io
 
-- Join a room: `socket.emit('joinRoom', eventId)`
-- Admin announcements broadcast to room `event:<id>` as `announcement`
+- Join a room: `socket.emit('join-event', eventId)`
+- Admin announcements broadcast to room `eventId` as `announcement`
+- Only runs on a real running process (`npm run dev` / a persistent host) — not on Vercel
 
 ## Deploy
 
