@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { id: decoded.id, role: decoded.role };
+    req.user = decoded; // { userId, role }
     next();
   } catch (err) {
     next(new AppError('Invalid or expired token', 401));
