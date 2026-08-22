@@ -1,0 +1,397 @@
+{
+  "info": {
+    "name": "EventPulse",
+    "description": "EventPulse API - auth, events, registrations, categories, and real-time announcements.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Attendee\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/auth/register",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Jane Attendee\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"token\": \"eyJhbGciOi...\",\n  \"data\": {\n    \"id\": \"66f1a2b3c4d5e6f7a8b9c0d1\",\n    \"name\": \"Jane Attendee\",\n    \"email\": \"jane@example.com\",\n    \"role\": \"user\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data && data.token) {",
+                  "  pm.environment.set('token', data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@eventpulse.com\",\n  \"password\": \"admin123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/auth/login",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@eventpulse.com\",\n  \"password\": \"admin123\"\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"token\": \"eyJhbGciOi...\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "List events",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/events?page=1&limit=10&sortBy=date&order=asc"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "GET", "url": "{{baseUrl}}/api/events" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": [ { \"_id\": \"...\", \"title\": \"Summer Music Festival\", \"category\": { \"_id\": \"...\", \"name\": \"Music\" }, \"organizer\": { \"_id\": \"...\", \"name\": \"Admin User\" }, \"date\": \"2026-07-15T00:00:00.000Z\", \"city\": \"Cairo\", \"capacity\": 200 } ],\n  \"total\": 1,\n  \"page\": 1,\n  \"limit\": 10,\n  \"totalPages\": 1\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get single event",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/events/:id",
+            "variable": [{ "key": "id", "value": "REPLACE_WITH_REAL_EVENT_ID" }]
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "GET", "url": "{{baseUrl}}/api/events/:id" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": { \"_id\": \"...\", \"title\": \"Summer Music Festival\", \"category\": { \"_id\": \"...\", \"name\": \"Music\" }, \"organizer\": { \"_id\": \"...\", \"name\": \"Admin User\" } }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create event (admin only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "url": "{{baseUrl}}/api/events",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test Conference\",\n  \"description\": \"A test event created via Postman\",\n  \"category\": \"REPLACE_WITH_A_REAL_CATEGORY_ID\",\n  \"date\": \"2026-12-01T10:00:00.000Z\",\n  \"city\": \"Cairo\",\n  \"capacity\": 50\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/events" },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": { \"_id\": \"...\", \"title\": \"Test Conference\", \"organizer\": \"...\" }\n}"
+            },
+            {
+              "name": "403 Forbidden (non-admin)",
+              "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/events" },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"fail\",\n  \"message\": \"You do not have permission to perform this action\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update event (admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "url": "{{baseUrl}}/api/events/:id",
+            "variable": [{ "key": "id", "value": "REPLACE_WITH_REAL_EVENT_ID" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capacity\": 75\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "PATCH", "url": "{{baseUrl}}/api/events/:id" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": { \"_id\": \"...\", \"capacity\": 75 }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete event (admin only)",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "url": "{{baseUrl}}/api/events/:id",
+            "variable": [{ "key": "id", "value": "REPLACE_WITH_REAL_EVENT_ID" }]
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "DELETE", "url": "{{baseUrl}}/api/events/:id" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"message\": \"Event deleted\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Registrations",
+      "item": [
+        {
+          "name": "Register for an event",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "url": "{{baseUrl}}/api/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"REPLACE_WITH_REAL_EVENT_ID\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/registrations" },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": { \"_id\": \"...\", \"event\": \"...\", \"attendee\": \"...\" }\n}"
+            },
+            {
+              "name": "400 Event full",
+              "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/registrations" },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"fail\",\n  \"message\": \"This event is full\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "My registrations",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "url": "{{baseUrl}}/api/registrations/my"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "GET", "url": "{{baseUrl}}/api/registrations/my" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"results\": 1,\n  \"data\": [ { \"_id\": \"...\", \"event\": { \"_id\": \"...\", \"title\": \"Summer Music Festival\" } } ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cancel registration",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "url": "{{baseUrl}}/api/registrations/:id",
+            "variable": [{ "key": "id", "value": "REPLACE_WITH_REAL_REGISTRATION_ID" }]
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "DELETE", "url": "{{baseUrl}}/api/registrations/:id" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"message\": \"Registration cancelled successfully\"\n}"
+            },
+            {
+              "name": "403 Not your registration",
+              "originalRequest": { "method": "DELETE", "url": "{{baseUrl}}/api/registrations/:id" },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"fail\",\n  \"message\": \"You can only cancel your own registration\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Announcements",
+      "item": [
+        {
+          "name": "Send announcement (admin only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "url": "{{baseUrl}}/api/announcements",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"REPLACE_WITH_REAL_EVENT_ID\",\n  \"text\": \"Doors open in 30 minutes!\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/announcements" },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": { \"_id\": \"...\", \"event\": \"...\", \"sender\": \"...\", \"text\": \"Doors open in 30 minutes!\", \"createdAt\": \"...\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get announcement history (public)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/announcements/:eventId",
+            "variable": [{ "key": "eventId", "value": "REPLACE_WITH_REAL_EVENT_ID" }]
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "GET", "url": "{{baseUrl}}/api/announcements/:eventId" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"results\": 1,\n  \"data\": [ { \"_id\": \"...\", \"text\": \"Doors open in 30 minutes!\", \"sender\": { \"name\": \"Admin User\" }, \"createdAt\": \"...\" } ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List categories",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/categories"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "GET", "url": "{{baseUrl}}/api/categories" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"results\": 3,\n  \"data\": [ { \"_id\": \"...\", \"name\": \"Music\" }, { \"_id\": \"...\", \"name\": \"Sports\" }, { \"_id\": \"...\", \"name\": \"Tech\" } ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create category (admin only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "url": "{{baseUrl}}/api/categories",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Comedy\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/categories" },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": { \"_id\": \"...\", \"name\": \"Comedy\" }\n}"
+            },
+            {
+              "name": "400 Duplicate",
+              "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/categories" },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"fail\",\n  \"message\": \"Category already exists\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
