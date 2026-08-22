@@ -12,9 +12,9 @@ const messageSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
-    content: {
+    text: {
       type: String,
-      required: [true, 'Content is required'],
+      required: [true, 'Text is required'],
     },
   },
   { timestamps: true }

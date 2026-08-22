@@ -8,8 +8,8 @@ const initSocket = (server) => {
   io.on('connection', (socket) => {
     console.log(`Socket connected: ${socket.id}`);
 
-    socket.on('joinRoom', (eventId) => {
-      socket.join(`event:${eventId}`);
+    socket.on('join-event', (eventId) => {
+      socket.join(eventId);
     });
 
     socket.on('disconnect', () => {

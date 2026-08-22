@@ -1,7 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
 const eventController = require('../controllers/eventController');
-const messageController = require('../controllers/messageController');
 const requireAuth = require('../middleware/requireAuth');
 const requireRole = require('../middleware/requireRole');
 const validate = require('../middleware/validate');
@@ -48,17 +47,5 @@ router.patch(
 );
 
 router.delete('/:id', requireAuth, requireRole('admin'), eventController.deleteEvent);
-
-// Real-time announcements
-router.post(
-  '/:id/announcements',
-  requireAuth,
-  requireRole('admin'),
-  [body('content').notEmpty().withMessage('Content is required')],
-  validate,
-  messageController.createAnnouncement
-);
-
-router.get('/:id/announcements', requireAuth, messageController.getAnnouncements);
 
 module.exports = router;
