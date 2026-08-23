@@ -90,3 +90,4 @@ Conventional commits, tagged `v1.0.0`.
 git remote add origin <your-repo-url>
 git push -u origin main --tags
 ```
+api-docs only work in local due to vercel not bundling the local swagger package, so if you want to check out /api-docs, please test it locally.
